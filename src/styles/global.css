@@ -1,0 +1,46 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/* Custom theme configuration */
+@theme {
+  --color-primary-50: #f0f4ff;
+  --color-primary-100: #e0e9ff;
+  --color-primary-200: #c7d6fe;
+  --color-primary-300: #a3b8fc;
+  --color-primary-400: #7a8ff8;
+  --color-primary-500: #5a66f2;
+  --color-primary-600: #4445e7;
+  --color-primary-700: #3936cc;
+  --color-primary-800: #302fa5;
+  --color-primary-900: #2c2c82;
+  --color-primary-950: #1a1a2e;
+
+  --font-family-sans: 'Inter', system-ui, sans-serif;
+}
+
+/* Base styles */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  @apply bg-white text-gray-900 dark:bg-gray-950 dark:text-gray-100;
+  @apply transition-colors duration-200;
+}
+
+/* Custom utility classes */
+@utility container-custom {
+  @apply max-w-6xl mx-auto px-4 sm:px-6 lg:px-8;
+}
+
+@utility btn {
+  @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-colors;
+}
+
+@utility btn-primary {
+  @apply bg-primary-600 text-white hover:bg-primary-700 dark:bg-primary-500 dark:hover:bg-primary-600;
+}
+
+@utility btn-secondary {
+  @apply bg-gray-100 text-gray-900 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700;
+}

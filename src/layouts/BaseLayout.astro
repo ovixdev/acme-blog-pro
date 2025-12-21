@@ -25,8 +25,8 @@ const socialImageURL = image ? new URL(image, Astro.site) : null;
     <meta name="generator" content={Astro.generator} />
 
     <!-- Primary Meta Tags -->
-    <title>{title} | Acme Ltd</title>
-    <meta name="title" content={`${title} | Acme Ltd`} />
+    <title>{title} | AcmePro Ltd</title>
+    <meta name="title" content={`${title} | AcmePro Ltd`} />
     <meta name="description" content={description} />
 
     <!-- Canonical -->
@@ -38,14 +38,14 @@ const socialImageURL = image ? new URL(image, Astro.site) : null;
     <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalURL} />
-    <meta property="og:title" content={`${title} | Acme Ltd`} />
+    <meta property="og:title" content={`${title} | AcmePro Ltd`} />
     <meta property="og:description" content={description} />
     {socialImageURL && <meta property="og:image" content={socialImageURL} />}
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image" />
     <meta property="twitter:url" content={canonicalURL} />
-    <meta property="twitter:title" content={`${title} | Acme Ltd`} />
+    <meta property="twitter:title" content={`${title} | AcmePro Ltd`} />
     <meta property="twitter:description" content={description} />
     {socialImageURL && <meta property="twitter:image" content={socialImageURL} />}
 

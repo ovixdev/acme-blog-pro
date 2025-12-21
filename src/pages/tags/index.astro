@@ -1,0 +1,53 @@
+---
+// src/pages/tags/index.astro
+
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildUrl, filterDrafts } from '../../utils';
+
+const posts = await getCollection('posts');
+const filteredPosts = filterDrafts(posts);
+
+// Get tags with count
+const tagCounts = filteredPosts
+  .flatMap((post) => post.data.tags)
+  .reduce((acc, tag) => {
+    acc[tag] = (acc[tag] || 0) + 1;
+    return acc;
+  }, {} as Record<string, number>);
+
+// Sort by count (descending), then alphabetically
+const sortedTags = Object.entries(tagCounts).sort((a, b) => {
+  if (b[1] !== a[1]) return b[1] - a[1];
+  return a[0].localeCompare(b[0]);
+});
+---
+
+<BaseLayout title="Tags" description="Browse all tags">
+  <section class="py-12 lg:py-16">
+    <div class="container-custom">
+      <!-- Header -->
+      <header class="mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          Tags
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          Browse posts by topic
+        </p>
+      </header>
+
+      <!-- Tags Cloud -->
+      <div class="flex flex-wrap gap-3">
+        {sortedTags.map(([tag, count]) => (
+
+           <a href={buildUrl(`tags/${tag}`)}
+            class="inline-flex items-center gap-2 px-4 py-2 bg-gray-100 dark:bg-gray-800 hover:bg-primary-100 dark:hover:bg-primary-900 text-gray-700 dark:text-gray-300 hover:text-primary-700 dark:hover:text-primary-300 rounded-full transition-colors"
+          >
+            <span class="font-medium">{tag}</span>
+            <span class="text-sm text-gray-500 dark:text-gray-400">({count})</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

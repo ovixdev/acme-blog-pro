@@ -1,0 +1,67 @@
+---
+// src/pages/tags/[tag].astro
+
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import PostCard from '../../components/PostCard.astro';
+import { sortByDate, filterDrafts, buildUrl } from '../../utils';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  const filteredPosts = filterDrafts(posts);
+
+  // Get all unique tags
+  const tags = [...new Set(filteredPosts.flatMap((post) => post.data.tags))];
+
+  return tags.map((tag) => ({
+    params: { tag },
+    props: {
+      tag,
+      posts: sortByDate(filteredPosts.filter((post) => post.data.tags.includes(tag))),
+    },
+  }));
+}
+
+const { tag, posts } = Astro.props;
+const totalPosts = posts.length;
+---
+
+<BaseLayout title={`Posts tagged "${tag}"`} description={`All posts tagged with ${tag}`}>
+  <section class="py-12 lg:py-16">
+    <div class="container-custom">
+      <!-- Header -->
+      <header class="mb-12">
+        <a
+          href={buildUrl('blog')}
+          class="inline-flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 mb-4"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          All posts
+        </a>
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          <span class="text-primary-600 dark:text-primary-400">#</span>{tag}
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          {totalPosts} {totalPosts === 1 ? 'post' : 'posts'} tagged with "{tag}"
+        </p>
+      </header>
+
+      <!-- Posts Grid -->
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        {posts.map((post) => (
+          <PostCard
+            title={post.data.title}
+            slug={post.slug}
+            description={post.data.description}
+            pubDate={post.data.pubDate}
+            author={post.data.author}
+            tags={post.data.tags}
+            image={post.data.image}
+          />
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>

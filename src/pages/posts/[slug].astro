@@ -26,15 +26,13 @@ const formattedDate = formatDate(post.data.pubDate);
         <!-- Header -->
         <header class="mb-10">
           <!-- Tags -->
-          {post.data.tags && post.data.tags.length > 0 && (
-            <div class="flex flex-wrap gap-2 mb-4">
-              {post.data.tags.map((tag) => (
-                <span class="px-3 py-1 text-sm font-medium bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded-full">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          )}
+       {post.data.tags.map((tag) => (
+
+            <a href={buildUrl(`tags/${tag}`)}
+            class="px-3 py-1 text-sm font-medium bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded-full hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors">
+            {tag}
+        </a>
+        ))}
 
           <!-- Title -->
           <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">

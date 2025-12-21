@@ -2,9 +2,10 @@
 // src/pages/posts/[slug].astro
 
 import { getCollection, render } from 'astro:content';
-import BaseLayout from '../../layouts/BaseLayout.astro';
+import Comments from '../../components/Comments.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
-import { formatDate, buildUrl, getReadingTime, getRelatedPosts, filterDrafts } from '../../utils';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildUrl, filterDrafts, formatDate, getReadingTime, getRelatedPosts } from '../../utils';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
@@ -109,6 +110,8 @@ const relatedPosts = getRelatedPosts(post, filterDrafts(allPosts), 3);
             Back to all posts
           </a>
         </div>
+        <!-- Comments -->
+        <Comments slug={post.slug} />
       </div>
     </div>
   </article>

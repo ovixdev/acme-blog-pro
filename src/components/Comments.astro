@@ -1,0 +1,81 @@
+---
+// src/components/Comments.astro
+
+interface Props {
+  slug: string;
+}
+
+const { slug } = Astro.props;
+
+// Replace these with your values from giscus.app
+const giscusConfig = {
+  repo: 'ovixdev/acme-blog-pro',
+  repoId: 'R_kgDOQsjxXw', // Get this from giscus.app
+  category: 'Announcements',
+  categoryId: 'DIC_kwDOQsjxX84C0E8K', // Get this from giscus.app
+};
+---
+
+<section class="mt-16 pt-8 border-t border-gray-200 dark:border-gray-800">
+  <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Comments</h2>
+
+  <div id="giscus-container">
+    <div class="giscus"></div>
+  </div>
+</section>
+
+<script is:inline define:vars={{ giscusConfig, slug }}>
+  function loadGiscus() {
+    const container = document.querySelector('.giscus');
+    if (!container) return;
+
+    // Check if already loaded
+    if (container.querySelector('iframe')) return;
+
+    const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+
+    const script = document.createElement('script');
+    script.src = 'https://giscus.app/client.js';
+    script.setAttribute('data-repo', giscusConfig.repo);
+    script.setAttribute('data-repo-id', giscusConfig.repoId);
+    script.setAttribute('data-category', giscusConfig.category);
+    script.setAttribute('data-category-id', giscusConfig.categoryId);
+    script.setAttribute('data-mapping', 'pathname');
+    script.setAttribute('data-strict', '0');
+    script.setAttribute('data-reactions-enabled', '1');
+    script.setAttribute('data-emit-metadata', '0');
+    script.setAttribute('data-input-position', 'top');
+    script.setAttribute('data-theme', theme);
+    script.setAttribute('data-lang', 'en');
+    script.setAttribute('data-loading', 'lazy');
+    script.crossOrigin = 'anonymous';
+    script.async = true;
+
+    container.appendChild(script);
+  }
+
+  // Load on page ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', loadGiscus);
+  } else {
+    loadGiscus();
+  }
+
+  // Update theme when toggled
+  const observer = new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.attributeName === 'class') {
+        const iframe = document.querySelector('.giscus iframe');
+        if (iframe) {
+          const theme = document.documentElement.classList.contains('dark') ? 'dark' : 'light';
+          iframe.contentWindow.postMessage(
+            { giscus: { setConfig: { theme: theme } } },
+            'https://giscus.app'
+          );
+        }
+      }
+    });
+  });
+
+  observer.observe(document.documentElement, { attributes: true });
+</script>

@@ -1,6 +1,8 @@
 ---
 // src/components/Header.astro
 
+import Search from './Search.astro';
+
 interface Props {
   currentPath?: string;
 }
@@ -47,25 +49,26 @@ const getMobileNavClass = (href: string) => {
       </a>
 
       <!-- Desktop Navigation -->
-        <div class="hidden md:flex items-center gap-8">
+      <div class="hidden md:flex items-center gap-8">
         {navItems.map((item) => (
-            <a href={item.href} class={getNavClass(item.href)}>
+          <a href={item.href} class={getNavClass(item.href)}>
             {item.label}
-            </a>
+          </a>
         ))}
+
+        <!-- Search -->
+        <Search />
 
         <!-- RSS Link -->
 
-            <a href={buildUrl('rss.xml')}
-            class="text-gray-600 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors"
-            aria-label="RSS Feed"
-            title="RSS Feed"
-        >
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          <a href={buildUrl('rss.xml')}
+          class="text-gray-600 hover:text-primary-600 dark:text-gray-400 dark:hover:text-primary-400 transition-colors"
+          aria-label="RSS Feed"
+          title="RSS Feed">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M6.18 15.64a2.18 2.18 0 0 1 2.18 2.18C8.36 19 7.38 20 6.18 20C5 20 4 19 4 17.82a2.18 2.18 0 0 1 2.18-2.18M4 4.44A15.56 15.56 0 0 1 19.56 20h-2.83A12.73 12.73 0 0 0 4 7.27V4.44m0 5.66a9.9 9.9 0 0 1 9.9 9.9h-2.83A7.07 7.07 0 0 0 4 12.93V10.1Z"></path>
-            </svg>
+          </svg>
         </a>
-
 
         <!-- Dark Mode Toggle -->
         <button
@@ -83,17 +86,23 @@ const getMobileNavClass = (href: string) => {
         </button>
       </div>
 
-      <!-- Mobile Menu Button -->
-      <button
-        id="mobile-menu-button"
-        type="button"
-        class="md:hidden p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 cursor-pointer"
-        aria-label="Open menu"
-      >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-        </svg>
-      </button>
+      <!-- Mobile Icons -->
+      <div class="flex md:hidden items-center gap-2">
+        <!-- Mobile Search -->
+        <Search />
+
+        <!-- Mobile Menu Button -->
+        <button
+          id="mobile-menu-button"
+          type="button"
+          class="p-2 rounded-lg text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 cursor-pointer"
+          aria-label="Open menu"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+          </svg>
+        </button>
+      </div>
     </div>
 
     <!-- Mobile Navigation -->
@@ -104,6 +113,13 @@ const getMobileNavClass = (href: string) => {
             {item.label}
           </a>
         ))}
+
+        <!-- Mobile RSS -->
+        <a href={buildUrl('rss.xml')}
+          class="px-4 py-2 rounded-lg text-sm font-medium text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800"
+          aria-label="RSS Feed"
+          title="RSS Feed"
+        >📡 RSS Feed</a>
 
         <!-- Mobile Dark Mode Toggle -->
         <button
@@ -120,38 +136,8 @@ const getMobileNavClass = (href: string) => {
 </header>
 
 <script is:inline>
-  // Run when DOM is ready
-  document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('theme-toggle');
-    const mobileMenuButton = document.getElementById('mobile-menu-button');
-    const mobileMenu = document.getElementById('mobile-menu');
-
-    // Theme toggle
-    const toggleTheme = () => {
-      const isDark = document.documentElement.classList.contains('dark');
-      document.documentElement.classList.toggle('dark', !isDark);
-      localStorage.setItem('theme', !isDark ? 'dark' : 'light');
-    };
-
-    if (themeToggle) {
-      themeToggle.addEventListener('click', toggleTheme);
-    }
-
-    const themeToggleMobile = document.getElementById('theme-toggle-mobile');
-    if (themeToggleMobile) {
-      themeToggleMobile.addEventListener('click', toggleTheme);
-    }
-
-    // Mobile menu toggle
-    if (mobileMenuButton && mobileMenu) {
-      mobileMenuButton.addEventListener('click', () => {
-        mobileMenu.classList.toggle('hidden');
-      });
-    }
-  });
-
-  // Initialize theme immediately (before DOMContentLoaded)
   (function() {
+    // Initialize theme immediately (respects system preference)
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
@@ -160,4 +146,33 @@ const getMobileNavClass = (href: string) => {
       document.documentElement.classList.remove('dark');
     }
   })();
+
+  document.addEventListener('DOMContentLoaded', function() {
+    function toggleTheme() {
+      const isDark = document.documentElement.classList.contains('dark');
+      document.documentElement.classList.toggle('dark', !isDark);
+      localStorage.setItem('theme', !isDark ? 'dark' : 'light');
+    }
+
+    // Desktop toggle
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+      themeToggle.addEventListener('click', toggleTheme);
+    }
+
+    // Mobile toggle
+    const themeToggleMobile = document.getElementById('theme-toggle-mobile');
+    if (themeToggleMobile) {
+      themeToggleMobile.addEventListener('click', toggleTheme);
+    }
+
+    // Mobile menu toggle
+    const mobileMenuButton = document.getElementById('mobile-menu-button');
+    const mobileMenu = document.getElementById('mobile-menu');
+    if (mobileMenuButton && mobileMenu) {
+      mobileMenuButton.addEventListener('click', function() {
+        mobileMenu.classList.toggle('hidden');
+      });
+    }
+  });
 </script>

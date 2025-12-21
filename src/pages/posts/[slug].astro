@@ -1,0 +1,238 @@
+---
+// src/pages/posts/[slug].astro
+
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import { buildUrl, formatDate } from '../../utils';
+
+export async function getStaticPaths() {
+  const posts = await getCollection('posts');
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post },
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+
+const formattedDate = formatDate(post.data.pubDate);
+---
+
+<BaseLayout title={post.data.title} description={post.data.description}>
+  <article class="py-12 lg:py-16">
+    <div class="container-custom">
+      <div class="max-w-3xl mx-auto">
+        <!-- Header -->
+        <header class="mb-10">
+          <!-- Tags -->
+          {post.data.tags && post.data.tags.length > 0 && (
+            <div class="flex flex-wrap gap-2 mb-4">
+              {post.data.tags.map((tag) => (
+                <span class="px-3 py-1 text-sm font-medium bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded-full">
+                  {tag}
+                </span>
+              ))}
+            </div>
+          )}
+
+          <!-- Title -->
+          <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
+            {post.data.title}
+          </h1>
+
+          <!-- Meta -->
+          <div class="flex items-center gap-4 pb-8 border-b border-gray-200 dark:border-gray-800">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
+                <span class="text-sm font-bold text-primary-600 dark:text-primary-400">
+                  {post.data.author.charAt(0)}
+                </span>
+              </div>
+              <div>
+                <p class="font-medium text-gray-900 dark:text-white">{post.data.author}</p>
+                <time datetime={post.data.pubDate.toISOString()} class="text-sm text-gray-500 dark:text-gray-400">
+                  {formattedDate}
+                </time>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        <!-- Content -->
+        <div class="post-content text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
+          <Content />
+        </div>
+
+        <!-- Back Link -->
+        <div class="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+
+           <a href={buildUrl('blog')}
+            class="inline-flex items-center gap-2 text-primary-600 dark:text-primary-400 hover:underline font-medium"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+            Back to all posts
+          </a>
+        </div>
+      </div>
+    </div>
+  </article>
+</BaseLayout>
+
+<style is:global>
+  .post-content h1 {
+    font-size: 1.875rem;
+    font-weight: 700;
+    color: #111827;
+    margin-top: 3rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .dark .post-content h1 {
+    color: #fff;
+  }
+
+  .post-content h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #111827;
+    margin-top: 2.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .dark .post-content h2 {
+    color: #fff;
+  }
+
+  .post-content h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #111827;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .dark .post-content h3 {
+    color: #fff;
+  }
+
+  .post-content p {
+    margin-bottom: 1.5rem;
+  }
+
+  .post-content a {
+    color: #4445e7;
+    text-decoration: underline;
+  }
+
+  .post-content a:hover {
+    text-decoration: none;
+  }
+
+  .dark .post-content a {
+    color: #7a8ff8;
+  }
+
+  .post-content strong {
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .dark .post-content strong {
+    color: #fff;
+  }
+
+  .post-content ul,
+  .post-content ol {
+    margin-bottom: 1.5rem;
+    padding-left: 1.5rem;
+  }
+
+  .post-content ul {
+    list-style-type: disc;
+  }
+
+  .post-content ol {
+    list-style-type: decimal;
+  }
+
+  .post-content li {
+    margin-bottom: 0.5rem;
+  }
+
+  .post-content blockquote {
+    border-left: 4px solid #5a66f2;
+    padding-left: 1.5rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    font-style: italic;
+    color: #4b5563;
+    background-color: #f9fafb;
+    border-radius: 0 0.5rem 0.5rem 0;
+  }
+
+  .dark .post-content blockquote {
+    color: #9ca3af;
+    background-color: #111827;
+  }
+
+  .post-content code {
+    background-color: #f3f4f6;
+    padding: 0.125rem 0.375rem;
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    font-family: ui-monospace, monospace;
+    color: #4445e7;
+  }
+
+  .dark .post-content code {
+    background-color: #1f2937;
+    color: #a3b8fc;
+  }
+
+  .post-content pre {
+    background-color: #111827;
+    color: #f3f4f6;
+    padding: 1.5rem;
+    border-radius: 0.75rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+  }
+
+  .dark .post-content pre {
+    background-color: #030712;
+  }
+
+  .post-content pre code {
+    background-color: transparent;
+    padding: 0;
+    color: inherit;
+    font-size: 0.875rem;
+  }
+
+  .post-content hr {
+    margin-top: 2.5rem;
+    margin-bottom: 2.5rem;
+    border-color: #e5e7eb;
+  }
+
+  .dark .post-content hr {
+    border-color: #374151;
+  }
+
+  .post-content img {
+    border-radius: 0.75rem;
+    margin-top: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  /* Hide duplicate h1 from markdown */
+  .post-content > h1:first-child {
+    display: none;
+  }
+</style>

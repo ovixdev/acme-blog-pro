@@ -1,0 +1,79 @@
+---
+// src/pages/about.astro
+
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const team = [
+  {
+    name: 'Jane Smith',
+    role: 'CEO & Founder',
+    bio: '15 years of experience in tech and marketing leadership.',
+  },
+  {
+    name: 'John Doe',
+    role: 'Head of Content',
+    bio: 'Former journalist with a passion for storytelling.',
+  },
+  {
+    name: 'Sarah Johnson',
+    role: 'Tech Lead',
+    bio: 'Full-stack developer and open source contributor.',
+  },
+];
+---
+
+<BaseLayout title="About" description="Learn more about Acme Ltd and our team">
+  <section class="py-12 lg:py-16">
+    <div class="container-custom">
+      <!-- Header -->
+      <header class="mb-12 max-w-3xl">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-6">
+          About Acme Ltd
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          We're a team of technologists and marketers passionate about helping businesses grow in the digital age.
+        </p>
+      </header>
+
+      <!-- Mission -->
+      <section class="mb-16 max-w-3xl">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+          Our Mission
+        </h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">
+          At Acme Ltd, we believe that great technology and smart marketing go hand in hand. Our mission is to share practical insights that help businesses navigate the digital landscape.
+        </p>
+        <p class="text-gray-600 dark:text-gray-400">
+          We've been in the industry for over a decade, working with startups and enterprises alike. Now we're sharing what we've learned through our blog.
+        </p>
+      </section>
+
+      <!-- Team -->
+      <section>
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-8">
+          Our Team
+        </h2>
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {team.map((member) => (
+            <div class="bg-gray-50 dark:bg-gray-900 rounded-xl p-6">
+              <div class="w-16 h-16 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center mb-4">
+                <span class="text-2xl font-bold text-primary-600 dark:text-primary-400">
+                  {member.name.charAt(0)}
+                </span>
+              </div>
+              <h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-1">
+                {member.name}
+              </h3>
+              <p class="text-sm text-primary-600 dark:text-primary-400 mb-3">
+                {member.role}
+              </p>
+              <p class="text-gray-600 dark:text-gray-400 text-sm">
+                {member.bio}
+              </p>
+            </div>
+          ))}
+        </div>
+      </section>
+    </div>
+  </section>
+</BaseLayout>

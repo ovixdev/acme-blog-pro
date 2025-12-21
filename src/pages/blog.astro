@@ -1,0 +1,47 @@
+---
+// src/pages/blog.astro
+
+import { getCollection } from 'astro:content';
+import PostCard from '../components/PostCard.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { filterDrafts, sortByDate } from '../utils';
+
+const allPosts = await getCollection('posts');
+const posts = sortByDate(filterDrafts(allPosts));
+const totalPosts = posts.length;
+---
+
+<BaseLayout title="Blog" description="Read the latest articles from Acme Ltd">
+  <section class="py-12 lg:py-16">
+    <div class="container-custom">
+      <!-- Header -->
+      <header class="mb-12">
+        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 dark:text-white mb-4">
+          Blog
+        </h1>
+        <p class="text-lg text-gray-600 dark:text-gray-400">
+          {totalPosts} {totalPosts === 1 ? 'article' : 'articles'} about tech, marketing, and business growth.
+        </p>
+      </header>
+
+      <!-- Posts Grid -->
+      {posts.length > 0 ? (
+        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          {posts.map((post) => (
+            <PostCard
+              title={post.data.title}
+              slug={post.slug}
+              description={post.data.description}
+              pubDate={post.data.pubDate}
+              author={post.data.author}
+              tags={post.data.tags}
+              image={post.data.image}
+            />
+          ))}
+        </div>
+      ) : (
+        <p class="text-gray-600 dark:text-gray-400">No posts yet. Check back soon!</p>
+      )}
+    </div>
+  </section>
+</BaseLayout>

@@ -1,5 +1,7 @@
 // src/utils/index.ts
 
+import type { CollectionEntry } from 'astro:content';
+
 /**
  * Ensures a value is a Date object
  */
@@ -34,9 +36,10 @@ export function formatDateShort(date: Date | string): string {
  */
 export function getReadingTime(content: string): string {
   const wordsPerMinute = 200;
-  const words = content.trim().split(/\s+/).length;
+  const textOnly = content.replace(/<[^>]*>/g, ''); // Remove HTML tags
+  const words = textOnly.trim().split(/\s+/).length;
   const minutes = Math.ceil(words / wordsPerMinute);
-  return `${minutes} min read`;
+  return minutes === 1 ? '1 min read' : `${minutes} min read`;
 }
 
 /**
@@ -51,7 +54,7 @@ export function buildUrl(path: string): string {
 /**
  * Gets unique tags from all posts
  */
-export function getUniqueTags(posts: { data: { tags: string[] } }[]): string[] {
+export function getUniqueTags(posts: CollectionEntry<'posts'>[]): string[] {
   const tags = posts.flatMap((post) => post.data.tags);
   return [...new Set(tags)].sort();
 }
@@ -59,7 +62,7 @@ export function getUniqueTags(posts: { data: { tags: string[] } }[]): string[] {
 /**
  * Filters out draft posts in production
  */
-export function filterDrafts<T extends { data: { draft: boolean } }>(posts: T[]): T[] {
+export function filterDrafts(posts: CollectionEntry<'posts'>[]): CollectionEntry<'posts'>[] {
   if (import.meta.env.PROD) {
     return posts.filter((post) => !post.data.draft);
   }
@@ -69,10 +72,32 @@ export function filterDrafts<T extends { data: { draft: boolean } }>(posts: T[])
 /**
  * Sorts posts by date (newest first)
  */
-export function sortByDate<T extends { data: { pubDate: Date | string } }>(posts: T[]): T[] {
-  return posts.sort((a, b) => {
+export function sortByDate(posts: CollectionEntry<'posts'>[]): CollectionEntry<'posts'>[] {
+  return [...posts].sort((a, b) => {
     const dateA = toDate(a.data.pubDate);
     const dateB = toDate(b.data.pubDate);
     return dateB.getTime() - dateA.getTime();
   });
+}
+
+/**
+ * Gets related posts based on shared tags
+ */
+export function getRelatedPosts(
+  currentPost: CollectionEntry<'posts'>,
+  allPosts: CollectionEntry<'posts'>[],
+  limit: number = 3
+): CollectionEntry<'posts'>[] {
+  const currentTags = currentPost.data.tags;
+
+  const postsWithScore = allPosts
+    .filter((post) => post.slug !== currentPost.slug)
+    .map((post) => {
+      const sharedTags = post.data.tags.filter((tag) => currentTags.includes(tag));
+      return { post, score: sharedTags.length };
+    })
+    .filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score);
+
+  return postsWithScore.slice(0, limit).map((item) => item.post);
 }

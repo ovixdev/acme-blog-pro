@@ -3,7 +3,8 @@
 
 import { getCollection, render } from 'astro:content';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import { buildUrl, filterDrafts, formatDate, getReadingTime, getRelatedPosts } from '../../utils';
+import TableOfContents from '../../components/TableOfContents.astro';
+import { formatDate, buildUrl, getReadingTime, getRelatedPosts, filterDrafts } from '../../utils';
 
 export async function getStaticPaths() {
   const posts = await getCollection('posts');
@@ -14,15 +15,13 @@ export async function getStaticPaths() {
 }
 
 const { post } = Astro.props;
-const { Content, remarkPluginFrontmatter } = await render(post);
+const { Content, headings } = await render(post);
 
 const formattedDate = formatDate(post.data.pubDate);
 
-// Calculate reading time from raw content
 const allPosts = await getCollection('posts');
 const readingTime = getReadingTime(post.body || '');
 
-// Get related posts
 const relatedPosts = getRelatedPosts(post, filterDrafts(allPosts), 3);
 ---
 
@@ -32,12 +31,11 @@ const relatedPosts = getRelatedPosts(post, filterDrafts(allPosts), 3);
       <div class="max-w-3xl mx-auto">
         <!-- Header -->
         <header class="mb-10">
-          <!-- Tags -->
           {post.data.tags && post.data.tags.length > 0 && (
             <div class="flex flex-wrap gap-2 mb-4">
               {post.data.tags.map((tag) => (
 
-                <a href={buildUrl(`tags/${tag}`)}
+                 <a href={buildUrl(`tags/${tag}`)}
                   class="px-3 py-1 text-sm font-medium bg-primary-100 dark:bg-primary-900/50 text-primary-700 dark:text-primary-300 rounded-full hover:bg-primary-200 dark:hover:bg-primary-800 transition-colors"
                 >
                   {tag}
@@ -46,12 +44,10 @@ const relatedPosts = getRelatedPosts(post, filterDrafts(allPosts), 3);
             </div>
           )}
 
-          <!-- Title -->
           <h1 class="text-3xl md:text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white mb-6 leading-tight">
             {post.data.title}
           </h1>
 
-          <!-- Meta -->
           <div class="flex items-center gap-4 pb-8 border-b border-gray-200 dark:border-gray-800">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
@@ -71,6 +67,9 @@ const relatedPosts = getRelatedPosts(post, filterDrafts(allPosts), 3);
           </div>
         </header>
 
+        <!-- Table of Contents -->
+        <TableOfContents headings={headings} />
+
         <!-- Content -->
         <div class="post-content text-gray-700 dark:text-gray-300 text-lg leading-relaxed">
           <Content />
@@ -83,7 +82,7 @@ const relatedPosts = getRelatedPosts(post, filterDrafts(allPosts), 3);
             <div class="grid gap-6">
               {relatedPosts.map((relatedPost) => (
 
-                  <a href={buildUrl(`posts/${relatedPost.slug}`)}
+                 <a href={buildUrl(`posts/${relatedPost.slug}`)}
                   class="block p-4 rounded-xl bg-gray-50 dark:bg-gray-900 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
                 >
                   <h3 class="font-semibold text-gray-900 dark:text-white mb-1">

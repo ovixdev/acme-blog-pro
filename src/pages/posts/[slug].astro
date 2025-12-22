@@ -4,6 +4,7 @@
 import { getCollection, render } from 'astro:content';
 import Comments from '../../components/Comments.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
+import { getAuthorByName, getAvatarUrl } from '../../data/authors';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import { buildUrl, filterDrafts, formatDate, getReadingTime, getRelatedPosts } from '../../utils';
 
@@ -19,11 +20,15 @@ const { post } = Astro.props;
 const { Content, headings } = await render(post);
 
 const formattedDate = formatDate(post.data.pubDate);
-
-const allPosts = await getCollection('posts');
 const readingTime = getReadingTime(post.body || '');
 
+// Get author data
+const author = getAuthorByName(post.data.author);
+
+// Get related posts
+const allPosts = await getCollection('posts');
 const relatedPosts = getRelatedPosts(post, filterDrafts(allPosts), 3);
+
 ---
 
 <BaseLayout title={post.data.title} description={post.data.description}>
@@ -49,23 +54,29 @@ const relatedPosts = getRelatedPosts(post, filterDrafts(allPosts), 3);
             {post.data.title}
           </h1>
 
-          <div class="flex items-center gap-4 pb-8 border-b border-gray-200 dark:border-gray-800">
-            <div class="flex items-center gap-3">
-              <div class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center">
-                <span class="text-sm font-bold text-primary-600 dark:text-primary-400">
-                  {post.data.author.charAt(0)}
-                </span>
-              </div>
-              <div>
-                <p class="font-medium text-gray-900 dark:text-white">{post.data.author}</p>
-                <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                  <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
-                  <span>•</span>
-                  <span>{readingTime}</span>
-                </div>
-              </div>
-            </div>
-          </div>
+<div class="flex items-center gap-4 pb-8 border-b border-gray-200 dark:border-gray-800">
+  <div class="flex items-center gap-3">
+    <a href={buildUrl(`authors/${author?.id || ''}`)} class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center overflow-hidden">
+      {author?.avatar ? (
+        <img src={getAvatarUrl(author.avatar)} alt={author.name} class="w-full h-full object-cover" />
+      ) : (
+        <span class="text-sm font-bold text-primary-600 dark:text-primary-400">
+          {post.data.author.charAt(0)}
+        </span>
+      )}
+    </a>
+    <div>
+      <a href={buildUrl(`authors/${author?.id || ''}`)} class="font-medium text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+        {post.data.author}
+      </a>
+      <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+        <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
+        <span>•</span>
+        <span>{readingTime}</span>
+      </div>
+    </div>
+  </div>
+</div>
         </header>
 
         <!-- Table of Contents -->

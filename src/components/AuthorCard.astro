@@ -1,0 +1,56 @@
+---
+// src/components/AuthorCard.astro
+
+import type { Author } from '../data/authors';
+import { buildUrl } from '../utils';
+
+interface Props {
+  author: Author;
+  showBio?: boolean;
+  linked?: boolean;
+}
+
+const { author, showBio = false, linked = true } = Astro.props;
+
+const authorUrl = buildUrl(`authors/${author.id}`);
+---
+
+<div class="flex items-start gap-4">
+  {linked ? (
+    <a href={authorUrl} class="flex-shrink-0">
+      <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center overflow-hidden">
+        {author.avatar ? (
+          <img src={author.avatar} alt={author.name} class="w-full h-full object-cover" />
+        ) : (
+          <span class="text-lg font-bold text-primary-600 dark:text-primary-400">
+            {author.name.charAt(0)}
+          </span>
+        )}
+      </div>
+    </a>
+  ) : (
+    <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center overflow-hidden flex-shrink-0">
+      {author.avatar ? (
+        <img src={author.avatar} alt={author.name} class="w-full h-full object-cover" />
+      ) : (
+        <span class="text-lg font-bold text-primary-600 dark:text-primary-400">
+          {author.name.charAt(0)}
+        </span>
+      )}
+    </div>
+  )}
+
+  <div>
+    {linked ? (
+      <a href={authorUrl} class="font-medium text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+        {author.name}
+      </a>
+    ) : (
+      <p class="font-medium text-gray-900 dark:text-white">{author.name}</p>
+    )}
+    <p class="text-sm text-gray-500 dark:text-gray-400">{author.role}</p>
+    {showBio && (
+      <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">{author.bio}</p>
+    )}
+  </div>
+</div>

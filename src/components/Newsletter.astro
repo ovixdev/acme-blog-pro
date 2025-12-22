@@ -1,0 +1,134 @@
+---
+// src/components/Newsletter.astro
+
+interface Props {
+  title?: string;
+  description?: string;
+  compact?: boolean;
+}
+
+const {
+  title = "Subscribe to our newsletter",
+  description = "Get the latest posts delivered straight to your inbox.",
+  compact = false
+} = Astro.props;
+
+const convertKitFormId = '8897041';
+---
+
+{compact ? (
+  <!-- Compact Version -->
+  <div>
+    <form class="newsletter-form flex gap-2">
+      <input
+        type="email"
+        name="email"
+        placeholder="your@email.com"
+        required
+        class="flex-1 px-4 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+      />
+      <button
+        type="submit"
+        class="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
+      >
+        Subscribe
+      </button>
+    </form>
+    <div class="newsletter-message hidden mt-3 p-3 rounded-lg text-center text-sm"></div>
+  </div>
+) : (
+  <!-- Full Version -->
+  <div class="bg-gradient-to-br from-primary-50 to-primary-100 dark:from-gray-900 dark:to-gray-800 rounded-2xl p-8 md:p-12">
+    <div class="max-w-2xl mx-auto text-center">
+      <svg class="w-12 h-12 text-primary-600 dark:text-primary-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+      </svg>
+      <h3 class="text-2xl md:text-3xl font-bold text-gray-900 dark:text-white mb-3">
+        {title}
+      </h3>
+      <p class="text-gray-600 dark:text-gray-400 mb-6">
+        {description}
+      </p>
+
+      <form class="newsletter-form flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+        <input
+          type="email"
+          name="email"
+          placeholder="Enter your email"
+          required
+          class="flex-1 px-4 py-3 rounded-lg bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+        />
+        <button
+          type="submit"
+          class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors whitespace-nowrap"
+        >
+          Subscribe
+        </button>
+      </form>
+
+      <p class="text-xs text-gray-500 dark:text-gray-500 mt-4">
+        No spam. Unsubscribe at any time.
+      </p>
+
+      <div class="newsletter-message hidden mt-4 p-4 rounded-lg text-center max-w-md mx-auto"></div>
+    </div>
+  </div>
+)}
+
+<script is:inline define:vars={{ convertKitFormId }}>
+  document.addEventListener('DOMContentLoaded', function() {
+    var forms = document.querySelectorAll('.newsletter-form');
+
+    forms.forEach(function(form) {
+      var container = form.closest('div').parentElement || form.parentElement;
+      var messageEl = container.querySelector('.newsletter-message');
+
+      form.addEventListener('submit', async function(e) {
+        e.preventDefault();
+
+        var emailInput = form.querySelector('input[name="email"]');
+        var email = emailInput.value;
+        var button = form.querySelector('button[type="submit"]');
+        var originalText = button.textContent;
+
+        button.textContent = 'Subscribing...';
+        button.disabled = true;
+
+        try {
+          var formData = new FormData();
+          formData.append('email_address', email);
+
+          var response = await fetch('https://app.convertkit.com/forms/' + convertKitFormId + '/subscriptions', {
+            method: 'POST',
+            body: formData,
+          });
+
+          if (response.ok) {
+            if (messageEl) {
+              messageEl.className = 'newsletter-message mt-4 p-4 rounded-lg text-center max-w-md mx-auto bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400';
+              messageEl.textContent = '🎉 Thanks for subscribing! Check your inbox to confirm.';
+            }
+            form.reset();
+          } else {
+            throw new Error('Subscription failed');
+          }
+
+        } catch (error) {
+          if (messageEl) {
+            messageEl.className = 'newsletter-message mt-4 p-4 rounded-lg text-center max-w-md mx-auto bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400';
+            messageEl.textContent = 'Something went wrong. Please try again.';
+          }
+        } finally {
+          button.textContent = originalText;
+          button.disabled = false;
+
+          setTimeout(function() {
+            if (messageEl) {
+              messageEl.classList.add('hidden');
+            }
+          }, 5000);
+        }
+      });
+    });
+  });
+</script>

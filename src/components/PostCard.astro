@@ -14,9 +14,10 @@ interface Props {
     url: string;
     alt: string;
   };
+  draft?: boolean;
 }
 
-const { title, slug, description, pubDate, author, tags, image } = Astro.props;
+const { title, slug, description, pubDate, author, tags, image, draft = false } = Astro.props;
 
 const href = buildUrl(`posts/${slug}`);
 ---
@@ -25,28 +26,38 @@ const href = buildUrl(`posts/${slug}`);
   <a href={href} class="block">
     <!-- Image -->
     {image && (
-      <div class="aspect-video mb-4 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800">
+      <div class="aspect-video mb-4 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 relative">
         <img
           src={image.url}
           alt={image.alt}
           class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
           loading="lazy"
         />
+        {draft && (
+          <span class="absolute top-2 right-2 px-2 py-1 bg-yellow-500 text-yellow-900 text-xs font-bold rounded">
+            DRAFT
+          </span>
+        )}
       </div>
     )}
 
     <!-- Content -->
     <div class="space-y-2">
-      <!-- Tags -->
-      {tags && tags.length > 0 && (
-        <div class="flex flex-wrap gap-2">
-          {tags.slice(0, 2).map((tag) => (
+      <!-- Tags + Draft Badge -->
+      <div class="flex flex-wrap items-center gap-2">
+        {draft && !image && (
+          <span class="px-2 py-1 bg-yellow-500 text-yellow-900 text-xs font-bold rounded">
+            DRAFT
+          </span>
+        )}
+        {tags && tags.length > 0 && (
+          tags.slice(0, 2).map((tag) => (
             <span class="text-xs font-medium text-primary-600 dark:text-primary-400">
               {tag}
             </span>
-          ))}
-        </div>
-      )}
+          ))
+        )}
+      </div>
 
       <!-- Title -->
       <h3 class="text-xl font-semibold text-gray-900 dark:text-white group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors">

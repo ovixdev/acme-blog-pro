@@ -55,6 +55,7 @@ const posts = sortByDate(filterDrafts(allPosts)).slice(0, 3);
             author={post.data.author}
             tags={post.data.tags}
             image={post.data.image}
+            draft={post.data.draft}
           />
         ))}
       </div>

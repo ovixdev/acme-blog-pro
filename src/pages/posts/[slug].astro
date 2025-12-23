@@ -1,6 +1,7 @@
 ---
 // src/pages/posts/[slug].astro
 
+import { Image } from 'astro:assets';
 import { getCollection, render } from 'astro:content';
 import Comments from '../../components/Comments.astro';
 import TableOfContents from '../../components/TableOfContents.astro';
@@ -54,30 +55,52 @@ const relatedPosts = getRelatedPosts(post, filterDrafts(allPosts), 3);
             {post.data.title}
           </h1>
 
-<div class="flex items-center gap-4 pb-8 border-b border-gray-200 dark:border-gray-800">
-  <div class="flex items-center gap-3">
-    <a href={buildUrl(`authors/${author?.id || ''}`)} class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center overflow-hidden">
-      {author?.avatar ? (
-        <img src={getAvatarUrl(author.avatar)} alt={author.name} class="w-full h-full object-cover" />
-      ) : (
-        <span class="text-sm font-bold text-primary-600 dark:text-primary-400">
-          {post.data.author.charAt(0)}
-        </span>
-      )}
-    </a>
-    <div>
-      <a href={buildUrl(`authors/${author?.id || ''}`)} class="font-medium text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-        {post.data.author}
-      </a>
-      <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-        <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
-        <span>•</span>
-        <span>{readingTime}</span>
-      </div>
-    </div>
-  </div>
-</div>
+          <div class="flex items-center gap-4 pb-8 border-b border-gray-200 dark:border-gray-800">
+            <div class="flex items-center gap-3">
+              <a href={buildUrl(`authors/${author?.id || ''}`)} class="w-10 h-10 bg-primary-100 dark:bg-primary-900 rounded-full flex items-center justify-center overflow-hidden">
+                {author?.avatar ? (
+                  <img src={getAvatarUrl(author.avatar)} alt={author.name} class="w-full h-full object-cover" />
+                ) : (
+                  <span class="text-sm font-bold text-primary-600 dark:text-primary-400">
+                    {post.data.author.charAt(0)}
+                  </span>
+                )}
+              </a>
+              <div>
+                <a href={buildUrl(`authors/${author?.id || ''}`)} class="font-medium text-gray-900 dark:text-white hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                  {post.data.author}
+                </a>
+                <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                  <time datetime={post.data.pubDate.toISOString()}>{formattedDate}</time>
+                  <span>•</span>
+                  <span>{readingTime}</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </header>
+
+                <!-- Hero Image -->
+        {post.data.image && (
+          <div class="aspect-video mb-10 overflow-hidden rounded-2xl bg-gray-100 dark:bg-gray-800">
+            {typeof post.data.image.src === 'string' ? (
+              <img
+                src={post.data.image.src}
+                alt={post.data.image.alt}
+                class="w-full h-full object-cover"
+              />
+            ) : (
+              <Image
+                src={post.data.image.src}
+                alt={post.data.image.alt}
+                width={1200}
+                height={675}
+                class="w-full h-full object-cover"
+                quality={85}
+              />
+            )}
+          </div>
+        )}
 
         <!-- Table of Contents -->
         <TableOfContents headings={headings} />

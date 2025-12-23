@@ -1,0 +1,51 @@
+---
+// src/components/OptimizedImage.astro
+
+import { Image } from 'astro:assets';
+
+interface Props {
+  src: string | ImageMetadata;
+  alt: string;
+  width?: number;
+  height?: number;
+  class?: string;
+  loading?: 'lazy' | 'eager';
+  quality?: number;
+}
+
+const {
+  src,
+  alt,
+  width = 800,
+  height = 450,
+  class: className = '',
+  loading = 'lazy',
+  quality = 80,
+} = Astro.props;
+
+// Check if it's a remote URL or local image
+const isRemote = typeof src === 'string' && src.startsWith('http');
+---
+
+{isRemote ? (
+  <Image
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    class={className}
+    loading={loading}
+    quality={quality}
+    format="webp"
+  />
+) : (
+  <Image
+    src={src}
+    alt={alt}
+    width={width}
+    height={height}
+    class={className}
+    loading={loading}
+    quality={quality}
+  />
+)}

@@ -1,6 +1,7 @@
 ---
 // src/components/PostCard.astro
 
+import { Image } from 'astro:assets';
 import { buildUrl, formatDateShort } from '../utils';
 
 interface Props {
@@ -11,7 +12,7 @@ interface Props {
   author: string;
   tags?: string[];
   image?: {
-    url: string;
+    src: ImageMetadata | string;
     alt: string;
   };
   draft?: boolean;
@@ -27,12 +28,24 @@ const href = buildUrl(`posts/${slug}`);
     <!-- Image -->
     {image && (
       <div class="aspect-video mb-4 overflow-hidden rounded-xl bg-gray-100 dark:bg-gray-800 relative">
-        <img
-          src={image.url}
-          alt={image.alt}
-          class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-          loading="lazy"
-        />
+        {typeof image.src === 'string' ? (
+          <img
+            src={image.src}
+            alt={image.alt}
+            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+          />
+        ) : (
+          <Image
+            src={image.src}
+            alt={image.alt}
+            width={600}
+            height={340}
+            class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            loading="lazy"
+            quality={80}
+          />
+        )}
         {draft && (
           <span class="absolute top-2 right-2 px-2 py-1 bg-yellow-500 text-yellow-900 text-xs font-bold rounded">
             DRAFT
